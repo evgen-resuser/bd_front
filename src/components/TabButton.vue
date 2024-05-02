@@ -28,8 +28,8 @@ export default {
 .header_button {
   margin: 5px;
   padding: 10px 25px 10px 25px;
-  background: rgba(255, 255, 255, 0.26);
-  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
   cursor: pointer;
   width: 120px;
   word-wrap: break-word;
@@ -49,11 +49,11 @@ export default {
 }
 
 .icon {
-  margin: 0 5px 0 0;
+  margin: 0 10px 0 0;
   filter: invert();
 }
 
 .header_button:hover {
-  background: #669bbc;
+  background: rgba(102, 155, 188, 0.77);
 }
 </style>
