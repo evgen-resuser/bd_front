@@ -5,15 +5,6 @@ export default {
     goToLink() {
       window.location.href = this.link
     }
-  },
-  head() {
-    return {
-      link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap' }
-      ]
-    }
   }
 }
 </script>
@@ -42,9 +33,9 @@ export default {
 }
 
 .name {
-  font-family: "Rubik", sans-serif;
+  font-family: "Jost", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 100;
+  font-weight: 500;
   font-style: normal;
 }
 

@@ -1,12 +1,12 @@
 <script setup>
 import TabButton from "@/components/TabButton.vue"
-import SportsmanComponent from "@/components/SportsmanComponent.vue";
+import SportsmanComponent from "@/components/sportsman/SportsmanComponent.vue";
 import HomeComponent from "@/components/HomeComponent.vue";
 import CoachComponent from "@/components/CoachComponent.vue";
 import PlacesComponent from "@/components/PlacesComponent.vue";
 import CompetitionsComponent from "@/components/CompetitionsComponent.vue";
 
-const server_url = 'localhost:8080'
+const server_url = 'http://localhost:8080'
 
 </script>
 
@@ -15,9 +15,6 @@ export default {
   methods: {
     goToSection(section) {
       window.location.hash = section;
-    },
-    isSectionVisible(section) {
-      return window.location.hash === `#${section}`;
     }
   },
   mounted() {
@@ -28,7 +25,7 @@ export default {
 
 <template>
   <header>
-    <div class="header">
+    <div class="header" id="header">
       <div class="home_button"
            @click="goToSection('home')"
       >
@@ -67,13 +64,19 @@ export default {
   body {
     margin: 0;
     padding: 0;
-    background: aliceblue;
+    background: #d4eeff url('/background.png') repeat;
+
+
+    font-family: "Jost", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
   }
 
   .home_button {
     margin: 5px 12px 5px 5px;
     padding: 10px;
-    background: rgb(255, 90, 53);
+    background: linear-gradient(158deg, rgb(255, 53, 19) 0%, rgb(255, 198, 53) 100%);
     border-radius: 10px;
     cursor: pointer;
     width: 30px;
@@ -84,7 +87,7 @@ export default {
   }
 
   .home_button:hover {
-    background: #f7c59f;
+    background: #ff5a35;
   }
 
 </style>
