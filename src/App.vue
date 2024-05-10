@@ -2,7 +2,7 @@
 import TabButton from "@/components/TabButton.vue"
 import SportsmanComponent from "@/components/sportsman/SportsmanComponent.vue";
 import HomeComponent from "@/components/HomeComponent.vue";
-import CoachComponent from "@/components/CoachComponent.vue";
+import CoachComponent from "@/components/coach/CoachComponent.vue";
 import PlacesComponent from "@/components/PlacesComponent.vue";
 import CompetitionsComponent from "@/components/CompetitionsComponent.vue";
 
@@ -64,7 +64,7 @@ export default {
   body {
     margin: 0;
     padding: 0;
-    background: #d4eeff url('/background.png') repeat;
+    background: #8ecae6 url('/background.png') repeat;
 
 
     font-family: "Jost", sans-serif;

@@ -1,10 +1,8 @@
 <script>
-
-import SportsmanPanel from "@/components/sportsman/SportsmanPanel.vue";
-
+import CoachPanel from "@/components/coach/CoachPanel.vue";
 export default {
-  components: {SportsmanPanel},
   props: ['server'],
+  components: {CoachPanel},
   data() {
     return {
       headerHeight: 0,
@@ -25,14 +23,14 @@ export default {
 </script>
 
 <template>
-<div id="sportsman" class="sportsman_container">
-  <h2>Спортсмены</h2>
-  <SportsmanPanel :server="server"/>
-</div>
+  <div id="coach" class="coach_container">
+    <h2>Тренеры</h2>
+    <CoachPanel :server="server"/>
+  </div>
 </template>
 
 <style>
-.sportsman_container {
+.coach_container {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(5px);
   border-radius: 10px;
@@ -48,11 +46,11 @@ h2 {
   margin: 0;
 }
 
-#sportsman {
+#coach {
   display: none;
 }
 
-#sportsman:target {
+#coach:target {
   display: block;
 }
 </style>

@@ -1,6 +1,8 @@
 <script>
 import axios from "axios";
 import { getFormattedCoaches } from "./SportsmanUtils.js";
+import {getCoachesList, addCoachTo} from "@/components/coach/CoachUtils.js";
+
 export default {
   props: ['server'],
   data() {
@@ -11,12 +13,13 @@ export default {
       showSportsButton: true,
       sports: [],
       showAddCoach: false,
+      allCoaches: [],
+      selectedCoachToAdd: null,
     }
   },
   methods: {
     refreshList() {
       let url = this.server.concat("/data/sportsman")
-      console.log(url)
       axios.get(url)
           .then(response => {
             this.resultList = response.data;
@@ -32,7 +35,8 @@ export default {
       if (this.selectedEntry === null) return;
       try {
         const response = await fetch(this.server.concat('/find/sportsman/coaches?id=', id));
-        this.coaches = getFormattedCoaches(await response.json());
+        this.coaches.slice(0, this.coaches.length);
+        this.coaches = (getFormattedCoaches(await response.json()));
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -51,6 +55,20 @@ export default {
       this.coaches = [];
       this.sports = [];
       this.getCoaches(entry.id);
+    },
+    async loadCoachesList() {
+      this.showAddCoach = true;
+      this.allCoaches = await getCoachesList(this.server);
+    },
+    async addCoachTo(){
+      if (this.selectedCoachToAdd === null) {
+        console.log("NO SELECTED!")
+        return
+      }
+      const coachId = this.selectedCoachToAdd.id;
+      await addCoachTo(this.selectedEntry.id, coachId, this.server)
+      this.showAddCoach = false
+      await this.getCoaches(this.selectedEntry.id)
     }
 
   },
@@ -76,8 +94,8 @@ export default {
     </div>
     <div class="main_panel">
       <div class="subpanel2">
-        <div class="about">
-          <strong style="font-weight: 600; margin: 10px 10px 20px 10px" >О спортсмене:</strong>
+        <div class="about2">
+          <strong style="font-weight: 600; margin: 10px" >О спортсмене:</strong>
           <div class="no_selected"
                v-if="selectedEntry === null"
           >Выберете кого-нибудь в списке слева</div>
@@ -87,14 +105,14 @@ export default {
           </ul>
         </div>
         <div class="about2">
-          <strong style="font-weight: 600; margin: 10px 10px 20px 10px" >Его тренеры:</strong>
+          <strong style="font-weight: 600; margin: 10px" >Его тренеры:</strong>
           <div class="viewport">
             <ul>
               <li v-for="c in this.coaches">{{c}}</li>
             </ul>
           </div>
           <div class="params">
-            <button class="param_button" @click="showAddCoach = true">Добавить</button>
+            <button class="param_button" @click="(selectedEntry !== null) ? loadCoachesList() : null">Добавить</button>
           </div>
         </div>
       </div>
@@ -105,10 +123,10 @@ export default {
 
           </div>
           <div class="params">
-            <input id="dischargeCheckBox" type="checkbox">
-            <label for="dischargeCheckBox">Не ниже разряда:</label>
-            <input type="number" style="width: 50px" min="1" max="10">
             <button class="param_button">Применить</button>
+            <input id="dischargeCheckBox" type="checkbox">
+            <label for="dischargeCheckBox">Не ниже разряда: </label>
+            <input type="number" style="width: 50px" min="1" max="10">
           </div>
         </div>
         <div class="about2">
@@ -117,50 +135,68 @@ export default {
 
           </div>
           <div class="params">
-
+            <button class="param_button">Применить</button>
           </div>
         </div>
       </div>
 
     </div>
   </div>
-
-
+  <div v-if="showAddCoach" class="add">
+    <div class="modal_content">
+      <span class="close" @click="showAddCoach = false">&times;</span>
+      <h3>Добавить тренера</h3>
+       <select id="coaches_select" class="coaches" v-model="selectedCoachToAdd">
+         <option v-for="c in this.allCoaches" :value="c">
+           {{c.id}} : {{c.name}}
+         </option>
+       </select>
+      <button class="param_button"
+              @click="addCoachTo()"
+      >Добавить</button>
+    </div>
+  </div>
 
 </template>
 
 <style>
-.side_panel {
-  border-right: 2px solid #ff5a35;
+@import "public/styles/sider.css";
+
+.add {
+  display: block;
   position: fixed;
-  top: 0;
+  z-index: 1;
   left: 0;
-  width: 25%;
+  top: 0;
+  width: 100%;
   height: 100%;
-  padding: 20px 0;
   overflow: auto;
+  backdrop-filter: blur(5px);
 }
 
-.list {
-  margin: 20px 5px 10px 5px;
-  padding: 5px;
-}
-
-.sportsman_entry {
-  margin: 5px;
-  padding: 10px;
-  background-color: white;
+.modal_content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 2px solid #ff5a35;
+  width: 300px;
   border-radius: 10px;
-  cursor: default;
-  border: 1px solid rgb(147, 147, 147);
 }
 
-.sportsman_entry:hover {
-  border: 1px solid #ff5a35;
-  background-color: #f7c59f;
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.about, .about2 {
+.close:hover, .close:focus {
+  color: #ff5a35;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.about2 {
   margin: 10px;
   padding: 10px;
   background-color: white;
@@ -169,21 +205,19 @@ export default {
   border: 1px solid rgb(147, 147, 147);
 }
 
-.about {
-  flex: 1;
-  overflow: auto;
-}
-
 .about2 {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding-bottom: 0;
 }
 
 .params {
   width: 100%;
   flex: 1;
   border-top: 1px solid rgb(147, 147, 147);
+  display: flex;
+  align-items: center;
 }
 
 .viewport {
@@ -214,18 +248,11 @@ ul {
   list-style-type: none;
 }
 
-.subpanel,.subpanel2 {
+.subpanel2 {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.subpanel2 {
   height: 40%;
-}
-
-.subpanel {
-  height: 30%;
 }
 
 .param_button {
@@ -234,6 +261,7 @@ ul {
   padding: 5px;
   margin: 5px;
   color: white;
+  width: 100px;
   font-weight: 300;
   border-color: #ff5a35;
 }
