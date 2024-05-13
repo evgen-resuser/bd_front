@@ -93,7 +93,7 @@ export default {
       </div>
     </div>
     <div class="main_panel">
-      <div class="subpanel2">
+      <div class="subpanel">
         <div class="about2">
           <strong style="font-weight: 600; margin: 10px" >О спортсмене:</strong>
           <div class="no_selected"
@@ -116,7 +116,7 @@ export default {
           </div>
         </div>
       </div>
-      <div class="subpanel2">
+      <div class="subpanel">
         <div class="about2">
           <strong style="font-weight: 600; margin: 10px" >Его виды спорта:</strong>
           <div class="viewport">
@@ -160,7 +160,8 @@ export default {
 </template>
 
 <style>
-@import "public/styles/sider.css";
+@import "/public/styles/sider.css";
+@import "/public/styles/page.css";
 
 .add {
   display: block;
@@ -183,59 +184,6 @@ export default {
   border-radius: 10px;
 }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover, .close:focus {
-  color: #ff5a35;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.about2 {
-  margin: 10px;
-  padding: 10px;
-  background-color: white;
-  border-radius: 10px;
-  cursor: default;
-  border: 1px solid rgb(147, 147, 147);
-}
-
-.about2 {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0;
-}
-
-.params {
-  width: 100%;
-  flex: 1;
-  border-top: 1px solid rgb(147, 147, 147);
-  display: flex;
-  align-items: center;
-}
-
-.viewport {
-  width: 100%;
-  flex: 4;
-  overflow: auto;
-}
-
-.main_panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 75%;
-  height: 100%;
-  padding: 20px 0;
-  overflow: auto;
-}
-
 .no_selected {
   text-align: center;
   display: flex;
@@ -246,28 +194,6 @@ export default {
 
 ul {
   list-style-type: none;
-}
-
-.subpanel2 {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 40%;
-}
-
-.param_button {
-  background: linear-gradient(158deg, rgb(255, 53, 19) 0%, rgb(255, 198, 53) 100%);
-  border-radius: 10px;
-  padding: 5px;
-  margin: 5px;
-  color: white;
-  width: 100px;
-  font-weight: 300;
-  border-color: #ff5a35;
-}
-
-.param_button:hover {
-  background: #ff5a35;
 }
 
 </style>

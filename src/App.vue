@@ -3,8 +3,8 @@ import TabButton from "@/components/TabButton.vue"
 import SportsmanComponent from "@/components/sportsman/SportsmanComponent.vue";
 import HomeComponent from "@/components/HomeComponent.vue";
 import CoachComponent from "@/components/coach/CoachComponent.vue";
-import PlacesComponent from "@/components/PlacesComponent.vue";
-import CompetitionsComponent from "@/components/CompetitionsComponent.vue";
+import PlacesComponent from "@/components/places/PlacesComponent.vue";
+import CompetitionsComponent from "@/components/competition/CompetitionsComponent.vue";
 
 const server_url = 'http://localhost:8080'
 

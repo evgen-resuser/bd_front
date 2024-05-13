@@ -1,6 +1,8 @@
 <script>
-import {getCoachesList, getCoachesListBySport, getSportsmenOfCoach} from "@/components/coach/CoachUtils.js";
+import {getCoachesList, getCoachesListBySport, getSportsmenOfCoach, postCoach, deleteSportsman,
+update, getSportsByCoach, deleteSport, addSport, addSportsman} from "@/components/coach/CoachUtils.js";
 import {getSports} from "@/components/ExtraUtils.js";
+import {getAllSportsmen} from "@/components/sportsman/SportsmanUtils.js";
 
 export default {
   props: ['server'],
@@ -8,16 +10,22 @@ export default {
     return {
       coachesList: [],
       sportsList: [],
+      sportsmenList: [],
 
       selectedCoach: null,
       selectedSport: null,
+      sportsman: null,
 
       sportsmen: [],
+      sports: [],
 
       dischargeCheck: false,
       discharge: 0,
 
-
+      createWindowShow: false,
+      editWindowShow: false,
+      addSportsmenShow: false,
+      addSportShow: false,
     }
   },
   methods: {
@@ -27,18 +35,17 @@ export default {
     selectNew(entry) {
       this.selectedCoach = entry;
       this.showSportsmen()
+      this.getSportsByCoach()
     },
     async loadSports() {
       this.sportsList = await getSports(this.server)
+      console.log(this.sportsList)
     },
     async showBySport(id) {
       if (this.selectedSport === null) return;
-      console.log(this.coachesList);
       this.coachesList = [];
       let result = await getCoachesListBySport(this.server, id);
-      console.log(result);
       this.coachesList = [...result];
-      console.log(this.coachesList);
     },
     async showSportsmen() {
       if (!this.dischargeCheck)
@@ -46,12 +53,55 @@ export default {
       else {
         this.sportsmen = await getSportsmenOfCoach(this.server, this.selectedCoach.id, this.discharge)
       }
-      console.log(this.sportsmen);
+    },
+    async postCoach() {
+      let formData = {
+        "name": document.getElementById('name').value,
+      };
+      await postCoach(this.server, formData)
+      this.createWindowShow = false;
+      await this.getAllCoaches()
+    },
+    async deleteSportsman(id) {
+      await deleteSportsman(this.server, this.selectedCoach.id, id)
+      this.sportsmen.slice(0, this.sportsmen.length)
+      await this.showSportsmen()
+    },
+    async updateCoach(){
+      let newName = document.getElementById('nameUpd').value;
+      if (name === newName) return
+      let data = {
+          "name": newName,
+          "id":this.selectedCoach.id
+      }
+      await update(this.server, this.selectedCoach.id, data)
+      await this.getAllCoaches(); //todo не обновляет а сохраняет по-новой почему
+    },
+    async getSportsByCoach() {
+    this.sports = await getSportsByCoach(this.server, this.selectedCoach.id)
+    },
+    async deleteSportFromCoach(id) {
+      await deleteSport(this.server, this.selectedCoach.id, id)
+          //.then(this.getSportsByCoach)
+    },
+    async getAllSportsmen() {
+      this.sportsmenList = await getAllSportsmen(this.server)
+      console.log(this.sportsmenList)
+    },
+    async addSportsman() {
+      let id = this.sportsman.id
+      await addSportsman(this.server, this.selectedCoach.id, id)
+      this.addSportsmenShow = false;
+    },
+    async addSportToCoach() {
+      await addSport(this.server, this.selectedCoach.id, this.selectedSport.id)
+      this.addSportShow = false;
     }
   },
   mounted() {
-    this.getAllCoaches();
-    this.loadSports();
+    this.getAllCoaches()
+    this.loadSports()
+    this.getAllSportsmen()
   }
 
 }
@@ -71,7 +121,7 @@ export default {
   <div class="main_panel">
     <div class="coaches_by_sport">
       <h3>Показать тренеров по спорту</h3>
-      <label for="sport_select">Спорт </label>
+      <label for="sport_select">Спорт:  </label>
       <select id="sport_select" class="sport_select" v-model="selectedSport">
         <option v-for="s in sportsList" :value="s">{{s.name}}</option>
       </select >
@@ -82,34 +132,89 @@ export default {
         <div  class="viewport">
           <h3>Спортсмены тренера</h3>
           <ul>
-            <li v-for="s in this.sportsmen" >{{s.id}}: {{s.name}} <span v-if="isFinite(s.discharge)">- {{s.discharge}} разряд</span></li>
+            <li v-for="s in this.sportsmen" >
+              {{s.id}}: {{s.name}} <span v-if="isFinite(s.discharge)">- {{s.discharge}} разряд</span><span class="delete" @click="deleteSportsman(s.id)">&times;</span>
+            </li>
           </ul>
         </div>
         <div class="params">
           <button class="param_button" @click="showSportsmen()">Применить</button>
+          <button class="param_button" @click="this.addSportsmenShow = true">Добавить</button>
           <input id="dischargeCheckBox" type="checkbox" v-model="dischargeCheck">
           <label for="dischargeCheckBox">Не ниже разряда: </label>
           <input type="number" v-model="discharge" :disabled="!dischargeCheck" style="width: 50px" min="1" max="10">
         </div>
       </div>
       <div class="about2">
-        <div class="viewport">
-
+        <div  class="viewport">
+          <h3>Ведет виды спорта</h3>
+          <ul>
+            <li v-for="s in this.sports" >
+              {{s.name}}<span class="delete" @click="deleteSportFromCoach(s.id)">  &times;</span>
+            </li>
+          </ul>
         </div>
         <div class="params">
-
+          <button class="param_button" @click="addSportShow = true">Добавить</button>
         </div>
       </div>
+
     </div>
-    <button class="param_button" @click="this.getAllCoaches">Сброс</button>
-    <button class="param_button" @click="">Изменить</button>
-    <button class="param_button" @click="">Добавить</button>
+    <div style="margin-left: 10px">
+      <button class="param_button" @click="this.getAllCoaches">Сброс фильтров</button>
+      <button class="param_button" @click="editWindowShow = true">Изменить данные</button>
+      <button class="param_button" @click="createWindowShow = true">Добавить тренера</button>
+    </div>
   </div>
 </div>
+
+  <div v-if="editWindowShow" class="add">
+    <div class="modal_content">
+      <span class="close" @click="editWindowShow = false">&times;</span>
+      <h3>Изменить тренера</h3>
+      <label>ФИО: </label>
+      <input type="text" id="name" name="name" required v-model="this.selectedCoach.name">
+      <button @click="this.postCoach()">Изменить</button>
+    </div>
+  </div>
+
+  <div v-if="createWindowShow" class="add">
+    <div class="modal_content">
+      <span class="close" @click="createWindowShow = false">&times;</span>
+      <h3>Добавить тренера</h3>
+      <label>ФИО: </label>
+      <input type="text" id="nameUpd" name="nameUpd" required>
+      <button @click="this.updateCoach()">Добавить</button>
+    </div>
+  </div>
+
+  <div v-if="addSportsmenShow" class="add">
+    <div class="modal_content">
+      <span class="close" @click="addSportsmenShow = false">&times;</span>
+      <h3>Добавить спортсмена</h3>
+      <select id="sportsmen_select" class="sportsmen_select" v-model="this.sportsman">
+        <option v-for="s in sportsmenList" :value="s">{{s.name}}</option>
+      </select >
+      <button @click="this.addSportsman()">Добавить</button>
+    </div>
+  </div>
+
+  <div v-if="addSportShow" class="add">
+    <div class="modal_content">
+      <span class="close" @click="addSportShow = false">&times;</span>
+      <h3>Добавить спортсмена</h3>
+      <select id="sport_select" class="sport_select" v-model="selectedSport">
+        <option v-for="s in sportsList" :value="s">{{s.name}}</option>
+      </select >
+      <button @click="this.addSportToCoach()">Добавить</button>
+    </div>
+  </div>
+
 </template>
 
 <style>
-@import "public/styles/sider.css";
+@import "/public/styles/sider.css";
+@import "/public/styles/page.css";
 
 .coaches_by_sport {
   margin: 10px;
@@ -120,21 +225,6 @@ export default {
   border: 1px solid rgb(147, 147, 147);
 }
 
-.param_button {
-  background: linear-gradient(158deg, rgb(255, 53, 19) 0%, rgb(255, 198, 53) 100%);
-  border-radius: 10px;
-  padding: 5px;
-  margin: 5px;
-  color: white;
-  width: 100px;
-  font-weight: 300;
-  border-color: #ff5a35;
-}
-
-.param_button:hover {
-  background: #ff5a35;
-}
-
 .sport_select {
   background-color: white;
   border-radius: 10px;
@@ -142,41 +232,37 @@ export default {
   height: 30px;
 }
 
-.about2 {
-  margin: 10px;
-  padding: 10px;
-  background-color: white;
-  border-radius: 10px;
-  cursor: default;
-  border: 1px solid rgb(147, 147, 147);
-}
-
-.about2 {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 0;
-}
-
-.params {
+.add {
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
   width: 100%;
-  flex: 1;
-  border-top: 1px solid rgb(147, 147, 147);
-  display: flex;
-  align-items: center;
-}
-
-.viewport {
-  width: 100%;
-  flex: 4;
+  height: 100%;
   overflow: auto;
+  backdrop-filter: blur(5px);
 }
 
-.subpanel {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 40%;
+.modal_content {
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 2px solid #ff5a35;
+  width: 400px;
+  border-radius: 10px;
 }
 
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover, .close:focus {
+  color: #ff5a35;
+  text-decoration: none;
+  cursor: pointer;
+}
 </style>
