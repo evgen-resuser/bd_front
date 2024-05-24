@@ -40,7 +40,6 @@ export default {
   margin: 20px 7% 10px 7%;
   padding: 0 15px 0 15px;
   height: v-bind(pageHeight);
-  max-height: v-bind(pageHeight);
   overflow: hidden;
 }
 

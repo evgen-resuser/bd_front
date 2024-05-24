@@ -39,7 +39,7 @@ export default {
   padding: 0 15px 0 15px;
   height: v-bind(pageHeight);
   max-height: v-bind(pageHeight);
-  overflow: hidden;
+  overflow: auto;
 }
 
 h2 {

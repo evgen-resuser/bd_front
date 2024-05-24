@@ -39,7 +39,6 @@ export default {
     },
     async loadSports() {
       this.sportsList = await getSports(this.server)
-      console.log(this.sportsList)
     },
     async showBySport(id) {
       if (this.selectedSport === null) return;
@@ -56,7 +55,7 @@ export default {
     },
     async postCoach() {
       let formData = {
-        "name": document.getElementById('name').value,
+        "name": document.getElementById('nameUpd').value,
       };
       await postCoach(this.server, formData)
       this.createWindowShow = false;
@@ -82,11 +81,9 @@ export default {
     },
     async deleteSportFromCoach(id) {
       await deleteSport(this.server, this.selectedCoach.id, id)
-          //.then(this.getSportsByCoach)
     },
     async getAllSportsmen() {
       this.sportsmenList = await getAllSportsmen(this.server)
-      console.log(this.sportsmenList)
     },
     async addSportsman() {
       let id = this.sportsman.id
@@ -96,12 +93,15 @@ export default {
     async addSportToCoach() {
       await addSport(this.server, this.selectedCoach.id, this.selectedSport.id)
       this.addSportShow = false;
+    },
+    refreshAll() {
+      this.getAllCoaches()
+      this.loadSports()
+      this.getAllSportsmen()
     }
   },
   mounted() {
-    this.getAllCoaches()
-    this.loadSports()
-    this.getAllSportsmen()
+    this.refreshAll()
   }
 
 }
@@ -162,8 +162,9 @@ export default {
     </div>
     <div style="margin-left: 10px">
       <button class="param_button" @click="this.getAllCoaches">Сброс фильтров</button>
-      <button class="param_button" @click="editWindowShow = true">Изменить данные</button>
+<!--      <button class="param_button" @click="editWindowShow = true">Изменить данные</button>-->
       <button class="param_button" @click="createWindowShow = true">Добавить тренера</button>
+      <button class="param_button" @click="refreshAll">&#8635;</button>
     </div>
   </div>
 </div>
@@ -173,7 +174,7 @@ export default {
       <span class="close" @click="editWindowShow = false">&times;</span>
       <h3>Изменить тренера</h3>
       <label>ФИО: </label>
-      <input type="text" id="name" name="name" required v-model="this.selectedCoach.name">
+      <input type="text" id="name" name="name" class="text_input" required v-model="this.selectedCoach.name">
       <button @click="this.postCoach()">Изменить</button>
     </div>
   </div>
@@ -183,8 +184,8 @@ export default {
       <span class="close" @click="createWindowShow = false">&times;</span>
       <h3>Добавить тренера</h3>
       <label>ФИО: </label>
-      <input type="text" id="nameUpd" name="nameUpd" required>
-      <button @click="this.updateCoach()">Добавить</button>
+      <input type="text" id="nameUpd" name="nameUpd" class="text_input" required>
+      <button @click="this.postCoach()">Добавить</button>
     </div>
   </div>
 

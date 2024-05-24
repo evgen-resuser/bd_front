@@ -5,20 +5,31 @@ import HomeComponent from "@/components/HomeComponent.vue";
 import CoachComponent from "@/components/coach/CoachComponent.vue";
 import PlacesComponent from "@/components/places/PlacesComponent.vue";
 import CompetitionsComponent from "@/components/competition/CompetitionsComponent.vue";
+import ExtraComponent from "@/components/extra/ExtraComponent.vue";
 
 const server_url = 'http://localhost:8080'
 
 </script>
 
 <script>
+// import {getSports} from "@/components/ExtraUtils.js";
+
 export default {
   methods: {
     goToSection(section) {
       window.location.hash = section;
-    }
+    },
+    // async loadSports() {
+    //   this.sportsList = await getSports(this.server)
+    // },
   },
   mounted() {
     this.goToSection('home')
+  },
+  data() {
+    return {
+      sportsList: []
+    }
   }
 }
 </script>
@@ -33,8 +44,7 @@ export default {
       </div>
       <TabButton :name="'Спортсмены'"
                  :link="'/#sportsman'"
-                 :icon_path="'icons/sportsman_icon.svg'"
-      />
+                 :icon_path="'icons/sportsman_icon.svg'"/>
       <TabButton :name="'Тренеры'"
                  :link="'/#coach'"
                  :icon_path="'icons/coach_icon.svg'"/>
@@ -44,6 +54,9 @@ export default {
       <TabButton :name="'Соревнования'"
                  :link="'/#competition'"
                  :icon_path="'icons/trophy_icon.svg'"/>
+      <TabButton :name="'Прочее'"
+                 :link="'/#extra'"
+                 :icon_path="'icons/more_icon.svg'"/>
     </div>
   </header>
 
@@ -54,6 +67,7 @@ export default {
     <CoachComponent :server="server_url"/>
     <PlacesComponent :server="server_url"/>
     <CompetitionsComponent :server="server_url"/>
+    <ExtraComponent :server="server_url"/>
 
   </main>
 </template>
@@ -89,5 +103,7 @@ export default {
   .home_button:hover {
     background: #ff5a35;
   }
+
+
 
 </style>

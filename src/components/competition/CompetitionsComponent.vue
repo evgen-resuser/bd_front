@@ -1,6 +1,9 @@
 <script>
 
+import CompetitionPanel from "@/components/competition/CompetitionPanel.vue";
+
 export default {
+  components: {CompetitionPanel},
   props: ['server'],
   data() {
     return {
@@ -23,7 +26,8 @@ export default {
 
 <template>
   <div id="competition" class="competition_container">
-    <h2>COMPETITION</h2>
+    <h2>Соревнования</h2>
+    <CompetitionPanel :server="this.server"/>
   </div>
 </template>
 
@@ -38,7 +42,7 @@ export default {
   padding: 0 15px 0 15px;
   height: v-bind(pageHeight);
   max-height: v-bind(pageHeight);
-  overflow: hidden;
+  overflow: auto;
 }
 
 h2 {
